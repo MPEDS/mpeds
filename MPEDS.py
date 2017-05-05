@@ -15,6 +15,7 @@ class MPEDS:
 		''' '''
 		return self.vect.transform(text)
 
+
 	def haystack(self, X):
 		''' '''
 		return self.clf.predict(X)
