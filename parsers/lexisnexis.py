@@ -56,7 +56,10 @@ def parseLexisNexis(filename, output = "."):
     # text = re.sub('                Copyright .*?\\r\\n','ENDOFILE', text)
 
     # clean up crud at the beginning of the file
-    text = text.replace('\xef\xbb\xbf\r\n','') 
+    text = text.replace('\xef\xbb\xbf\r\n','')
+
+    ## other crud
+    text = text.replace('\\xa0', '')
 
     ## warning strings break date parsing, remove them
     warnings = [r'This content, including derivations, may not be stored or distributed in any\s+manner, disseminated, published, broadcast, rewritten\s+or reproduced without\s+express, written consent from STPNS\s+',
@@ -72,7 +75,7 @@ def parseLexisNexis(filename, output = "."):
     ## odd numbers are search_id, evens are the documents
     docs = []
     ids  = []
-    for i, d in enumerate(re.split("\s+(\d+) of \d+ DOCUMENTS", text)):
+    for i, d in enumerate(re.split(r'\s+(\d+) of \d+ DOCUMENTS', text)):
         if i == 0:
             pass
         elif i % 2 == 0:
@@ -80,17 +83,22 @@ def parseLexisNexis(filename, output = "."):
         else:
             ids.append(d)
 
-    # remove blank rows
-    docs = [f for f in docs if len(f.split('\r\n\r\n')) > 2] 
-    
+    # remove blank rows in Python 2
+    if (sys.version_info < (3, 0)):
+        docs = [f for f in docs if len(re.split(r'\r\n\r\n', f)) > 2]
+
     # Keep only the commonly occuring metadata
-    meta_list = [m for m in meta_list if float(text.count(m)) / len(docs) > .20] 
+    meta_list = [m for m in meta_list if float(text.count(m)) / len(docs) > 0.20] 
 
     articles = []
     ## Begin loop over each article
     for i, f in enumerate(docs):
         # Split into lines, and clean up the hard returns at the end of each line
-        lines = [row.replace('\r\n', ' ').strip() for row in f.split('\r\n\r\n') if len(row) > 0]
+
+        if (sys.version_info < (3, 0)):
+            lines = [row.replace('\r\n', ' ').strip() for row in f.split('\r\n\r\n') if len(row) > 0]
+        else:
+            lines = [row.replace('\n', ' ').strip() for row in f.split('\n\n') if len(row) > 0]
 
         ## With an abstract, this is the format:
         # Copyright 1990 The New York Times Company: Abstracts

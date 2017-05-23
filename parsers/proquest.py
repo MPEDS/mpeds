@@ -30,8 +30,8 @@ def parseProquest(filename, output = "."):
     ids  = []
     for i, d in enumerate(re.split(SEP, text)):
         d = d.strip()
+        docs.append(d)
         if re.match(r'Document \d+ of \d+', d):
-            docs.append(d)
             ids.append(i)
 
     # Keep only the commonly occuring metadata
@@ -109,7 +109,10 @@ def parseProquest(filename, output = "."):
 
         del meta_dict['Full text']
 
-        meta_dict['INTERNAL_ID'] = "%s_%s_%s" % (meta_dict['Publication title'], date, ids[i])
+        if ids:
+            meta_dict['INTERNAL_ID'] = "%s_%s_%s" % (meta_dict['Publication title'], date, ids[i])
+        else:
+            meta_dict['INTERNAL_ID'] = "%s_%s_%s" % (meta_dict['Publication title'], date, i)
         articles.append(meta_dict)
 
     print("\tAdded %d articles" % len(articles))
