@@ -1,3 +1,3 @@
-import lexisnexis
-import proquest
+from . import lexisnexis
+from . import proquest
 

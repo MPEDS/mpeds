@@ -14,10 +14,17 @@ from sklearn.externals import joblib
 class MPEDS:
     def __init__(self):
         ''' Constructor. '''
-        self.vect       = joblib.load("classifiers/haystack-vect_all-source_2016-03-21.pkl")
-        self.clf        = joblib.load("classifiers/haystack_all-source_2016-03-21.pkl")
-        self.search_str = 'boycott* "press conference" "news conference" (protest* AND NOT protestant*) strik* rally ralli* riot* sit-in occupation mobiliz* blockage demonstrat* marchi* marche*'
-        self.solr_url   = None
+        self.search_str  = 'boycott* "press conference" "news conference" (protest* AND NOT protestant*) strik* rally ralli* riot* sit-in occupation mobiliz* blockage demonstrat* marchi* marche*'
+        self.solr_url    = None
+
+        self.hay_clf     = None
+        self.hay_vect    = None
+        self.form_clf    = None
+        self.form_vect   = None
+        self.issue_clf   = None
+        self.issue_vect  = None
+        self.target_clf  = None
+        self.target_vect = None
 
 
     def setSolrURL(self, url):
@@ -92,31 +99,72 @@ class MPEDS:
         sentences = text.split("<br/>")
         return sentences[0]
 
-
-    def vectorize(self, text):
+    def haystack(self, text):
         ''' '''
-        return self.vect.transform(text)
+
+        ## load vectorizer
+        if not self.hay_vect:
+            print('Loading vectorizer...')
+            self.hay_vect = joblib.load('classifiers/haystack-vect_all-source_2016-03-21.pkl')
+
+        print('Vectorizing...')
+        X = self.hay_vect.transform(text)
+
+        ## load classifier
+        if not self.hay_clf:          
+            print('Loading classifier...')
+            self.hay_clf = joblib.load('classifiers/haystack_all-source_2016-03-21.pkl')
+
+        print('Predicting...')
+        y = self.hay_clf.predict(X)
+        return y
 
 
-    def haystack(self, X):
+    def getForm(self, text):
         ''' '''
-        return self.clf.predict(X)
+        if not self.form_vect:
+            print('Loading form vectorizer...')
+            self.form_vect = joblib.load('classifiers/form-vect_2016-04-28.pkl')
+
+        print('Vectorizing...')
+        X = self.form_vect.transform(text)
+
+        ## load classifier
+        if not self.form_clf:          
+            print('Loading form classifier...')
+            self.form_clf = joblib.load('classifiers/form_2016-04-28.pkl')
+
+        print('Predicting...')
+        y = self.form_clf.predict(X)
+        return y
 
 
-    def getForm(self, X):
+    def getFormProb(self, text):
         ''' '''
-        return self.form_clf.predict(X)
+        if not self.form_vect:
+            print('Loading form vectorizer...')
+            self.form_vect = joblib.load('classifiers/form-vect_2016-04-28.pkl')
 
+        print('Vectorizing...')
+        X = self.form_vect.transform(text)
 
-    def getFormProb(self, X):
-        ''' '''
-        pass
+        ## load classifier
+        if not self.form_clf:
+            print('Loading form classifier...')
+            self.form_clf = joblib.load('classifiers/form_2016-04-28.pkl')
+
+        print('Predicting form probabilities...')
+        probs    = self.form_clf.predict_proba(X)
+        p_tuples = []
+        for i in range(0, self.form_clf.classes_.shape[0]):
+            p_tuples.append( (self.form_clf.classes_[i], probs[i]) )
+
+        return p_tuples
 
 
     def getIssue(self, X):
         ''' '''
-        return self.issue_clf.predict(X)
-
+        pass
 
     def getIssueProb(self, X):
         ''' '''
@@ -125,8 +173,7 @@ class MPEDS:
 
     def getTarget(self, X):
         ''' '''
-        return self.target_clf.predict(X)
-
+        pass
 
     def getTargetProb(self, X):
         ''' '''
@@ -143,15 +190,3 @@ class MPEDS:
 
     def getSize(self, document):
         pass
-
-
-
-
-        
-
-
-
-
-
-
-

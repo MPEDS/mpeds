@@ -1,2 +1,2 @@
-from mpeds import MPEDS
+from . import classify_protest
 
