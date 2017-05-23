@@ -124,7 +124,7 @@ class MPEDS:
         ''' '''
         if not self.form_vect:
             print('Loading form vectorizer...')
-            self.form_vect = joblib.load('classifiers/form-vect_2016-04-28.pkl')
+            self.form_vect = joblib.load('classifiers/form-vect_2017-05-23.pkl')
 
         print('Vectorizing...')
         X = self.form_vect.transform(text)
@@ -132,7 +132,7 @@ class MPEDS:
         ## load classifier
         if not self.form_clf:          
             print('Loading form classifier...')
-            self.form_clf = joblib.load('classifiers/form_2016-04-28.pkl')
+            self.form_clf = joblib.load('classifiers/form_2017-05-23.pkl')
 
         print('Predicting...')
         y = self.form_clf.predict(X)
