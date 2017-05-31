@@ -105,7 +105,7 @@ class MPEDS:
         ## load vectorizer
         if not self.hay_vect:
             print('Loading vectorizer...')
-            self.hay_vect = joblib.load('classifiers/haystack-vect_all-source_2016-03-21.pkl')
+            self.hay_vect = joblib.load('classifiers/haystack-vect_all-source_2017-05-24.pkl')
 
         print('Vectorizing...')
         X = self.hay_vect.transform(text)
@@ -113,7 +113,7 @@ class MPEDS:
         ## load classifier
         if not self.hay_clf:
             print('Loading classifier...')
-            self.hay_clf = joblib.load('classifiers/haystack_all-source_2016-03-21.pkl')
+            self.hay_clf = joblib.load('classifiers/haystack_all-source_2017-05-24.pkl')
 
         print('Predicting...')
         y = self.hay_clf.predict(X)
@@ -144,7 +144,7 @@ class MPEDS:
         ''' '''
         if not self.form_vect:
             print('Loading form vectorizer...')
-            self.form_vect = joblib.load('classifiers/form-vect_2016-04-28.pkl')
+            self.form_vect = joblib.load('classifiers/form-vect_2017-05-23.pkl')
 
         print('Vectorizing...')
         X = self.form_vect.transform(text)
@@ -152,7 +152,7 @@ class MPEDS:
         ## load classifier
         if not self.form_clf:
             print('Loading form classifier...')
-            self.form_clf = joblib.load('classifiers/form_2016-04-28.pkl')
+            self.form_clf = joblib.load('classifiers/form_2017-05-23.pkl')
 
         print('Predicting form probabilities...')
         probs    = self.form_clf.predict_proba(X)
