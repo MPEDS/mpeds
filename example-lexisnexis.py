@@ -16,7 +16,7 @@ df = pd.DataFrame(articles)
 ## generate ID based on publication, date, and hash of text of document
 df['id'] = df.apply(lambda x: "%s_%s_%s" % (pubToID(x['PUBLICATION']), x['DATE'], md5(x['TEXT']).hexdigest()), axis = 1)
 
-## drop duplicates bsased on ID
+## drop duplicates based on ID
 df = df.drop_duplicates('id')
 
 ## create MPEDS object
