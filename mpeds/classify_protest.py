@@ -6,7 +6,7 @@ import urllib2
 
 import json
 
-import pandas as pd 
+import pandas as pd
 import numpy as np
 
 from sklearn.externals import joblib
@@ -50,7 +50,7 @@ class MPEDS:
             'start': start,
             'rows':  rows,
             'wt':    'json'
-        } 
+        }
 
         ## put protest string into fq field
         if protest:
@@ -111,7 +111,7 @@ class MPEDS:
         X = self.hay_vect.transform(text)
 
         ## load classifier
-        if not self.hay_clf:          
+        if not self.hay_clf:
             print('Loading classifier...')
             self.hay_clf = joblib.load('classifiers/haystack_all-source_2016-03-21.pkl')
 
@@ -130,12 +130,13 @@ class MPEDS:
         X = self.form_vect.transform(text)
 
         ## load classifier
-        if not self.form_clf:          
+        if not self.form_clf:
             print('Loading form classifier...')
             self.form_clf = joblib.load('classifiers/form_2017-05-23.pkl')
 
         print('Predicting...')
         y = self.form_clf.predict(X)
+
         return y
 
 
@@ -162,31 +163,59 @@ class MPEDS:
         return p_tuples
 
 
-    def getIssue(self, X):
+    def getIssue(self, text):
         ''' '''
-        pass
+        if not self.issue_vect:
+            print('Loading issue vectorizer...')
+            self.issue_vect = joblib.load('classifiers/issue-vect_2017-05-23.pkl')
 
-    def getIssueProb(self, X):
+        print('Vectorizing...')
+        X = self.issue_vect.transform(text)
+
+        ## load classifier
+        if not self.issue_clf:
+            print('Loading issue classifier...')
+            self.issue_clf = joblib.load('classifiers/issue_2017-05-23.pkl')
+
+        print('Predicting...')
+        y = self.issue_clf.predict(X)
+
+        return y
+
+    def getIssueProb(self, text):
         ''' '''
-        pass
+
+        # SGDclassifiers with loss='hinge' are linear SVMs, and thus do not support probability estimates
+        print('Sorry, issue classification model does not support probability estimates')
 
 
-    def getTarget(self, X):
+    def getTarget(self, text):
         ''' '''
-        pass
+        if not self.target_vect:
+            print('Loading target vectorizer...')
+            self.target_vect = joblib.load('classifiers/target-vect_2017-05-23.pkl')
 
-    def getTargetProb(self, X):
+        print('Vectorizing...')
+        X = self.target_vect.transform(text)
+
+        ## load classifier
+        if not self.target_clf:
+            print('Loading target classifier...')
+            self.target_clf = joblib.load('classifiers/target_2017-05-23.pkl')
+
+        print('Predicting...')
+        y = self.target_clf.predict(X)
+
+        return y
+
+    def getTargetProb(self, text):
         ''' '''
-        pass
 
+        print('Sorry, target classification model does not support probability estimates')
 
     def getLocation(self, document):
         pass
 
 
     def getSMO(self, document):
-        pass
-
-
-    def getSize(self, document):
         pass

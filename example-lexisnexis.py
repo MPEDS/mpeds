@@ -28,4 +28,6 @@ df_protest = df[df['y'] == 1]
 
 ## Error, not able to retrieve self.form_clf.classes_
 ## TK: Need to associate classes with this correctly
-#df_protest['form'] = mobj.getForm(df_protest['TEXT'])
+df_protest['form'] = mobj.getForm(df_protest['TEXT'])
+df_protest['issue'] = mobj.getIssue(df_protest['TEXT'])
+df_protest['target'] = mobj.getTarget(df_protest['TEXT'])
