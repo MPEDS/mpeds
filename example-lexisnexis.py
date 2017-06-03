@@ -31,3 +31,5 @@ df_protest = df[df['y'] == 1]
 df_protest['form'] = mobj.getForm(df_protest['TEXT'])
 df_protest['issue'] = mobj.getIssue(df_protest['TEXT'])
 df_protest['target'] = mobj.getTarget(df_protest['TEXT'])
+
+df_protest['size'] = mobj.getSize(df_protest['TEXT'])

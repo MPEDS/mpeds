@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 
 from sklearn.externals import joblib
+from mpeds.open_ended_coders import *
 
 class MPEDS:
     def __init__(self):
@@ -25,6 +26,8 @@ class MPEDS:
         self.issue_vect  = None
         self.target_clf  = None
         self.target_vect = None
+
+        self.size_clf = None
 
 
     def setSolrURL(self, url):
@@ -219,3 +222,13 @@ class MPEDS:
 
     def getSMO(self, document):
         pass
+
+    def getSize(self, document):
+        ''' Extract size from document '''
+
+        if not self.size_clf:
+            self.size_clf = SizeCoder()
+
+        sizes = document.apply(self.size_clf.getProtestSize, args = [True])
+
+        return sizes
