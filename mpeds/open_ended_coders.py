@@ -3,6 +3,10 @@ import numpy as np
 import nltk
 import re
 
+import urllib
+import urllib2
+import json
+
 from sklearn.feature_extraction import stop_words
 
 import nltk.data
@@ -240,8 +244,7 @@ class SizeCoder:
         """
         return re.compile('|'.join(open( 'input/ethnicities_2016-03-15.csv', 'r' ).read().split('\n')))
 
-
-class OrgLocCoder:
+class LocationCoder:
     '''
     Class for getting locations of organizations.
 
@@ -250,8 +253,34 @@ class OrgLocCoder:
     def __init__(self):
         pass
 
-    def getOrgLoc(self, text):
-        pass
+    def getLocation(self, text):
+        '''
+        Extract location from a string
+
+        :param text: text from which location should be extracted
+        :type text: string
+
+        :return: extracted locations
+        :rtype: string
+        '''
+
+        cliff_results = self._getCLIFF(text)
+        locations = self._CLIFFLocDecision(cliff_results)
+
+        return locations
+
+    def _urlencode_utf8(self, params):
+        '''
+        Workaround to allow for UTF-8 characters in urlencode
+
+        See http://stackoverflow.com/questions/6480723/urllib-urlencode-doesnt-like-unicode-values-how-about-this-workaround
+
+        '''
+        if hasattr(params, 'items'):
+            params = params.items()
+        return '&'.join(
+            (urllib.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.quote_plus(v.encode('utf8'), safe='/')
+                for k, v in params) )
 
     def _getCLIFF(self, text, as_str = False):
         '''Retrieve organizations and location via CLIFF.'''
@@ -260,10 +289,12 @@ class OrgLocCoder:
             return ([],{})
 
         obj = None
-        data = urlencode_utf8({ 'q': text.decode('utf-8') })
+        data = self._urlencode_utf8({ 'q': text.decode('utf-8') })
 
         while obj is None:
-            url = 'http://%s/parse/text' % config['CLIFF_URL']
+            # TO DO: Do we need a config file for this? Hardcoding URL for now
+            # url = 'http://%s/parse/text' % config['CLIFF_URL']
+            url = 'http://%s/parse/text' % '144.92.158.47:8080/cliff-2.3.0'
             req = urllib2.Request(url, data)
             res = urllib2.urlopen(req)
             obj = json.loads(res.read())
@@ -275,7 +306,48 @@ class OrgLocCoder:
                     obj = None
                     continue
 
-            orgs = obj['results']['organizations']
             locs = obj['results']['places']
 
-        return (orgs, locs)
+        return locs
+
+    def _CLIFFLocDecision(self, x):
+        """ Decision tree on what location to return based on CLIFF results. """
+
+        # should this have option to return set rather than string, to mimick size behaviour?
+
+        ## skip empties
+        if len(x.keys()) == 0:
+            return None
+
+        locs = []
+        mens = []
+        ## if focus exists, return the city first
+        if 'focus' in x:
+            unit = ''
+            cities = x['focus'].get('cities')
+            states = x['focus'].get('states')
+            countries = x['focus'].get('countries')
+
+            if cities:
+                unit = 'cities'
+            elif states:
+                unit = 'states'
+            elif countries:
+                unit = 'countries'
+            else:
+                return None
+
+            for l in x['focus'][unit]:
+                locs.append(l['name'])
+        elif 'mentions' in x:
+            for m in x['mentions']:
+                mens.append( (m['source']['string'], m['source']['charIndex']) )
+
+            ## take the top mentioned location
+            s_mens = sorted(mens, key = lambda x: x[1])
+            locs.append(s_mens[0])
+
+        if locs:
+            return ';'.join(np.sort(np.unique(locs)))
+
+        return None

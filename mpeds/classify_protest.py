@@ -28,6 +28,7 @@ class MPEDS:
         self.target_vect = None
 
         self.size_clf = None
+        self.location_clf = None
 
 
     def setSolrURL(self, url):
@@ -232,3 +233,13 @@ class MPEDS:
         sizes = document.apply(self.size_clf.getProtestSize, args = [True])
 
         return sizes
+
+    def getLocation(self, document):
+        ''' Extract location from document '''
+
+        if not self.location_clf:
+            self.location_clf = LocationCoder()
+
+        locations = document.apply(self.location_clf.getLocation)
+
+        return locations
