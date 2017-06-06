@@ -141,7 +141,7 @@ class SizeCoder:
                         return num
                 else:
                     num *= self.NUM_MAP[strings[i]]
-            if self.RE['DIGITS'].search(strings[i]):
+            elif self.RE['DIGITS'].search(strings[i]):
                 ## a number, just remove commas
                 num *= int(strings[i].replace(',', ''))
             elif strings[i] in self.NUM_MAP.keys():
