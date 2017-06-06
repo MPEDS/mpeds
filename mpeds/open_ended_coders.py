@@ -185,6 +185,7 @@ class SizeCoder:
             }
 
     def _loadSpecialWords(self):
+        ''' Load stop words, number prefixes, news agencies, and protest subject words. '''
         self.S_PREFIX  = ['around', 'up to', 'as many as', 'some', 'many', 'nearly', 'more than', 'about']
 
         self.P_SUBJ   = {
@@ -199,6 +200,7 @@ class SizeCoder:
 
 
     def _loadNumberMapping(self):
+        ''' Load dictionary mapping number strings to numbers. '''
 
         self.NUM_MAP = {
             'two' :  2,
@@ -238,10 +240,11 @@ class SizeCoder:
 
     def _loadEthnicities(self):
         # should this be named load when the other load functions update self objects rather than return stuff?
-        """ Load ethnic and nationalist nouns from Wikipedia:
+        '''
+        Load ethnic and nationalist nouns from Wikipedia:
         https://en.wikipedia.org/wiki/List_of_contemporary_ethnic_groups
         https://en.wikipedia.org/wiki/Lists_of_people_by_nationality
-        """
+        '''
         return re.compile('|'.join(open( 'input/ethnicities_2016-03-15.csv', 'r' ).read().split('\n')))
 
 class LocationCoder:
@@ -272,9 +275,13 @@ class LocationCoder:
     def _urlencode_utf8(self, params):
         '''
         Workaround to allow for UTF-8 characters in urlencode
-
         See http://stackoverflow.com/questions/6480723/urllib-urlencode-doesnt-like-unicode-values-how-about-this-workaround
 
+        :param params: parameters to encode
+        :type params: a dictionary or list of tuples containing parameters to be encoded
+
+        :return: utf-8 encoded URL parameters
+        :rtype: string
         '''
         if hasattr(params, 'items'):
             params = params.items()
@@ -282,8 +289,18 @@ class LocationCoder:
             (urllib.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.quote_plus(v.encode('utf8'), safe='/')
                 for k, v in params) )
 
-    def _getCLIFF(self, text, as_str = False):
-        '''Retrieve organizations and location via CLIFF.'''
+    def _getCLIFF(self, text):
+        '''
+        Retrieve organizations and location via CLIFF.
+
+        :param text: text from which locations should be extracted
+        :type text: string
+
+        :return: CLIFF location results
+        :rtype: dictionary
+
+        '''
+        # TO DO: should as_str be implemented here?
 
         if text != text:
             return ([],{})
@@ -311,9 +328,18 @@ class LocationCoder:
         return locs
 
     def _CLIFFLocDecision(self, x):
-        """ Decision tree on what location to return based on CLIFF results. """
+        '''
+        Decision tree on what location to return based on CLIFF results.
 
-        # should this have option to return set rather than string, to mimick size behaviour?
+        :param x: CLIFF location results
+        :type x: dictionary
+
+        :return: final location
+        :rtype: string
+
+        '''
+
+        # TO DO: should this have option to return set rather than string, to mimick size behaviour?
 
         ## skip empties
         if len(x.keys()) == 0:
