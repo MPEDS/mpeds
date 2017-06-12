@@ -7,7 +7,13 @@ import urllib
 import urllib2
 import json
 
+import os
+
+
 from sklearn.feature_extraction import stop_words
+from nltk.tag import StanfordNERTagger
+from nltk.tokenize.stanford import StanfordTokenizer
+
 
 import nltk.data
 
@@ -377,3 +383,62 @@ class LocationCoder:
             return ';'.join(np.sort(np.unique(locs)))
 
         return None
+
+class SMOCoder:
+
+    def __init__(self):
+
+        # set envirinment variable
+        # TO DO: update to Docker path
+        os.environ['CLASSPATH'] = '/home/a/ahanna/sandbox/stanford-ner-2015-12-09/'
+
+        # load tokenizer and tagger
+        # TO DO: again, update to Docker path
+        self.STANFORD_TOKENIZER = StanfordTokenizer('/home/a/ahanna/sandbox/stanford-ner-2015-12-09/stanford-ner-3.6.0.jar')
+        self.SMO_tagger = StanfordNERTagger('/home/a/ahanna/public/ner/ner-orgs_2016-03-28_all.ser.gz')
+
+
+    def getSMO(self, text, as_str = False):
+
+        # Tokenize. What to do about <br /> ?
+        tokens = self.STANFORD_TOKENIZER.tokenize(text)
+
+        # Run tagging. This returns a list of tuples
+        # classified as 'ORGANIZATION' if an SMO, 'O' otherwise
+        tags = self.SMO_tagger.tag(tokens)
+
+        current_SMO = ''
+        all_SMOs = []
+
+        # Note: Stanford NER tagger tags individual words as SMO or non-SMO.
+        # For example, Black Lives Matter will be returned as ('Black', 'ORGANIZATION'), ('Lives', 'ORGANIZATION'), ('Matter', 'ORGANIZATION')
+        # We want to parse this to a single organization.
+        #
+        # Non-perfect solution: assume that all consecutive ORGANIZATION tags represent a single SMO
+        for tag in tags:
+
+            # if tagged as organization, add to current SMO and skip ahead
+            if 'ORGANIZATION' == tag[1]:
+
+                if '' == current_SMO or "'" == tag[0]:
+                    current_SMO = current_SMO + tag[0]
+                else:
+                    current_SMO = current_SMO + ' ' + tag[0]
+                continue
+
+            # adding test for unknown label
+            if 'O' != tag[1]:
+                print('Unknown tag ' + tag[1] + ', skipping ahead. Could be worth investigating further.')
+
+            # add last detected organization to list and reset current_SMO
+            if '' != current_SMO:
+                all_SMOs.append(current_SMO)
+                current_SMO = ''
+
+        # get unique elements
+        all_SMOs = set(all_SMOs)
+
+        if as_str:
+            return '; '.join(all_SMOs)
+        else:
+            return all_SMOs

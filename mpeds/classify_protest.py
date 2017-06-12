@@ -29,6 +29,7 @@ class MPEDS:
 
         self.size_clf = None
         self.location_clf = None
+        self.smo_clf = None
 
 
     def setSolrURL(self, url):
@@ -217,12 +218,17 @@ class MPEDS:
 
         print('Sorry, target classification model does not support probability estimates')
 
-    def getLocation(self, document):
-        pass
 
 
     def getSMO(self, document):
-        pass
+        ''' Extract social movement organizations from document '''
+
+        if not self.smo_clf:
+            self.smo_clf = SMOCoder()
+
+        SMOs = document.apply(self.smo_clf.getSMO, args = [True])
+
+        return SMOs
 
     def getSize(self, document):
         ''' Extract size from document '''

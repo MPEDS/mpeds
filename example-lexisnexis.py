@@ -34,3 +34,4 @@ df_protest['target'] = mobj.getTarget(df_protest['TEXT'])
 
 df_protest['size'] = mobj.getSize(df_protest['TEXT'])
 df_protest['location'] = mobj.getLocation(df_protest['TEXT'])
+df_protest['smo'] = mobj.getSMO(df_protest['TEXT'])
