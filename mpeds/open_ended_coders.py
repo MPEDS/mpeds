@@ -82,6 +82,10 @@ class SizeCoder:
                 if not self.RE['DIGITS'].search(tokens[i]) and not self.RE['NUMBERS'].search(tokens[i]):
                     continue
 
+                ## skip years
+                if self.RE['YEARS'].search(tokens[i]):
+                    continue
+
                 ## look to the right
                 r_context = i + 5 if i + 5 <= i_end else i_end
                 r_start   = i + 1 if i + 1 <= i_end else i_end
@@ -147,7 +151,7 @@ class SizeCoder:
                         return num
                 else:
                     num *= self.NUM_MAP[strings[i]]
-            if self.RE['DIGITS'].search(strings[i]):
+            elif self.RE['DIGITS'].search(strings[i]):
                 ## a number, just remove commas
                 num *= int(strings[i].replace(',', ''))
             elif strings[i] in self.NUM_MAP.keys():
@@ -173,6 +177,7 @@ class SizeCoder:
         S_MIDTEEN = r'ten|eleven|twelve|thirteen|fourteen|fifteen'
         S_OVER20  = r'twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety'
         S_DIGITS  = r'\d*\,*\d+'
+        S_YEARS   = r'(18|19|20)([0-9][1-9]|[1-9][0-9])'
 
         # need to add ethnicities
         self.RE = {
@@ -187,7 +192,8 @@ class SizeCoder:
             'GROUPS': re.compile(r'group(s){0,1}|crowd(s){0,1}|estimate(s){0,1}|number(ing|ed){1}|march|rally|strike'),
             'VERBS': re.compile(r'strik(ing|es|ed)*|struck|demonstrat\w+|protest(?!ant)|march(ed|ing)|to march|rall(y|ied|ies)+|riot(ed|ing)*|picket(ed)*|chant(ed|ing)*|shout(ed|ing)*|(took|take) to the street(s)*|rampage(d)*|ransack(ed)|gather(ed)*|petition|occup(y|ied|ing)+|stay(ed)* home|demand(ed|ing)*|stopped work(ing)*|walk(ed)*\s*out|(holding|held) (up)* signs|held a sleepout|blockaded traffic|rebellion|jamm(ing|ed) the street(s)*|signed a letter|(press|news) conference|boycott(ed|ing)*|vandaliz\w+|burned|camp(ed)|return(ed)* to work|ended their fast|walked off the job|carr(ied|ying) signs|were expected'),
             'NVERBS': re.compile(r'were (hurt|injured|killed|wounded)|died'),
-            'ETHNIC': self._loadEthnicities()
+            'ETHNIC': self._loadEthnicities(),
+            'YEARS': re.compile(r'^(' + S_YEARS + ')$')
             }
 
     def _loadSpecialWords(self):
