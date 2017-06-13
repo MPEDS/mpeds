@@ -105,7 +105,15 @@ class MPEDS:
         return sentences[0]
 
     def haystack(self, text):
-        ''' '''
+        '''
+        Perform haystack classification task.
+
+        :param text: documents to be classified
+        :type text: pandas series of strings
+
+        :return: predictions
+        :rtype: pandas series
+        '''
 
         ## load vectorizer
         if not self.hay_vect:
@@ -126,7 +134,16 @@ class MPEDS:
 
 
     def getForm(self, text):
-        ''' '''
+        '''
+        Classify protest form.
+
+        :param text: documents to perform classification task on
+        :type text: pandas series of strings
+
+        :return: predictions
+        :rtype: pandas series
+        '''
+
         if not self.form_vect:
             print('Loading form vectorizer...')
             self.form_vect = joblib.load('classifiers/form-vect_2017-05-23.pkl')
@@ -169,7 +186,16 @@ class MPEDS:
 
 
     def getIssue(self, text):
-        ''' '''
+        '''
+        Classify protest issue.
+
+        :param text: documents to perform classification task on
+        :type text: pandas series of strings
+
+        :return: predictions
+        :rtype: pandas series
+        '''
+
         if not self.issue_vect:
             print('Loading issue vectorizer...')
             self.issue_vect = joblib.load('classifiers/issue-vect_2017-05-23.pkl')
@@ -195,7 +221,15 @@ class MPEDS:
 
 
     def getTarget(self, text):
-        ''' '''
+        '''
+        Classify protest target.
+
+        :param text: documents to perform classification task on
+        :type text: pandas series of strings
+
+        :return: predictions
+        :rtype: pandas series
+        '''
         if not self.target_vect:
             print('Loading target vectorizer...')
             self.target_vect = joblib.load('classifiers/target-vect_2017-05-23.pkl')
@@ -220,32 +254,55 @@ class MPEDS:
 
 
 
-    def getSMO(self, document):
-        ''' Extract social movement organizations from document '''
+    def getSMO(self, text):
+        '''
+        Extract social movement organizations from text
+
+        :param text: documents to perform coding task on
+        :type text: pandas series of strings
+
+        :return: extracted SMOs
+        :rtype: pandas series
+        '''
 
         if not self.smo_clf:
             self.smo_clf = SMOCoder()
 
-        SMOs = document.apply(self.smo_clf.getSMO, args = [True])
+        SMOs = text.apply(self.smo_clf.getSMO, args = [True])
 
         return SMOs
 
-    def getSize(self, document):
-        ''' Extract size from document '''
+    def getSize(self, text):
+        '''
+        Extract protest from text
 
+        :param text: documents to perform coding task on
+        :type text: pandas series of strings
+
+        :return: extracted sizes
+        :rtype: pandas series
+        '''
         if not self.size_clf:
             self.size_clf = SizeCoder()
 
-        sizes = document.apply(self.size_clf.getProtestSize, args = [True])
+        sizes = text.apply(self.size_clf.getProtestSize, args = [True])
 
         return sizes
 
-    def getLocation(self, document):
-        ''' Extract location from document '''
+    def getLocation(self, text):
+        '''
+        Extract locations from text
+
+        :param text: documents to perform coding task on
+        :type text: pandas series of strings
+
+        :return: extracted locations
+        :rtype: pandas series
+        '''
 
         if not self.location_clf:
             self.location_clf = LocationCoder()
 
-        locations = document.apply(self.location_clf.getLocation)
+        locations = text.apply(self.location_clf.getLocation)
 
         return locations

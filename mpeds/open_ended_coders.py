@@ -405,6 +405,18 @@ class SMOCoder:
 
 
     def getSMO(self, text, as_str = False):
+        '''
+        Extract social movement organizations from text using a custom trained Stanford NER tagger.
+
+        :param text: text to extract social movement organizations from
+        :type text: string
+
+        :param as_str: logical indicating whether SMOs should be returned as a string. Defaults to False.
+        :type as_str: boolean
+
+        :return: SMOs extracted from text
+        :rtype: set, or a string if as_str = True
+        '''
 
         # Tokenize. What to do about <br /> ?
         tokens = self.STANFORD_TOKENIZER.tokenize(text)
@@ -430,6 +442,7 @@ class SMOCoder:
                     current_SMO = current_SMO + tag[0]
                 else:
                     current_SMO = current_SMO + ' ' + tag[0]
+                    
                 continue
 
             # adding test for unknown label
