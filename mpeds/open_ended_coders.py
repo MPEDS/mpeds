@@ -79,6 +79,7 @@ class SizeCoder:
             for i in range(0, i_end):
                 loc += len(tokens[i]) + 1
                 size = None
+                
                 if not self.RE['DIGITS'].search(tokens[i]) and not self.RE['NUMBERS'].search(tokens[i]):
                     continue
 
@@ -400,8 +401,8 @@ class SMOCoder:
 
         # load tokenizer and tagger
         # TO DO: again, update to Docker path
-        self.STANFORD_TOKENIZER = StanfordTokenizer('/home/a/ahanna/sandbox/stanford-ner-2015-12-09/stanford-ner-3.6.0.jar')
-        self.SMO_tagger = StanfordNERTagger('/home/a/ahanna/public/ner/ner-orgs_2016-03-28_all.ser.gz')
+        self.STANFORD_TOKENIZER = StanfordTokenizer('tokenizers/stanford-ner-3.6.0.jar')
+        self.SMO_tagger = StanfordNERTagger('classifiers/ner-orgs_2016-03-28_all.ser.gz')
 
 
     def getSMO(self, text, as_str = False):
@@ -442,7 +443,7 @@ class SMOCoder:
                     current_SMO = current_SMO + tag[0]
                 else:
                     current_SMO = current_SMO + ' ' + tag[0]
-                    
+
                 continue
 
             # adding test for unknown label
