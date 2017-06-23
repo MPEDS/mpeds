@@ -38,6 +38,5 @@ class TestLocationCoder(unittest.TestCase):
 		self.assertEqual(self.coder.getLocation('across Canada'), 'Canada')
 
 
-
 if __name__ == '__main__':
 	unittest.main()

@@ -314,6 +314,7 @@ class MPEDS:
         if not self.location_clf:
             self.location_clf = LocationCoder()
 
-        locations = text.apply(self.location_clf.getLocation)
+        locations = text.apply(self.location_clf.getLocation, args = [True])
+        # locations = text.apply(self.location_clf.getLocation)
 
         return locations

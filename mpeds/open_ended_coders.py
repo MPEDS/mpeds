@@ -269,21 +269,56 @@ class LocationCoder:
     def __init__(self):
         pass
 
-    def getLocation(self, text):
+    def getLocation(self, text, as_str = False):
         '''
         Extract location from a string
 
         :param text: text from which location should be extracted
         :type text: string
 
+        :param as_str: logical indicating whether results should be returned as a string. Defaults to False.
+        :type as_str: boolean
+
         :return: extracted locations
-        :rtype: string
+        :rtype: set, or string if as_str = True
         '''
 
         cliff_results = self._getCLIFF(text)
         locations = self._CLIFFLocDecision(cliff_results)
 
-        return locations
+        if as_str and locations:
+            # do not run this step if locations is None, throws an error
+
+            # first convert each tuple to a string. Unfortunately need to do this in a for loop, due to utf-8 issues
+            string_locations = []
+
+            for location in locations:
+                
+                tuple_values = [ e if isinstance(e, unicode) else str(e) for e in location  ]
+                string_locations.append( ', '.join(tuple_values) )
+
+            return '; '.join(string_locations)
+
+        else:
+            return locations
+
+    def _matchGeoName(self, geoname_id, cliff_results, geoname_type = 'state'):
+        '''
+        Get name of state or country based on GeoName ID.
+
+
+        '''
+        if geoname_type not in ['state', 'country']:
+            raise ValueError("geoname_type must be either state or country")
+
+        field = geoname_type + 'GeoNameId'
+
+        for entry in cliff_results:
+            if geoname_id == entry[field]:
+                return entry['name']
+
+        return None
+
 
     def _urlencode_utf8(self, params):
         '''
@@ -347,6 +382,7 @@ class LocationCoder:
         :param x: CLIFF location results
         :type x: dictionary
 
+
         :return: final location
         :rtype: string
 
@@ -377,7 +413,18 @@ class LocationCoder:
                 return None
 
             for l in x['focus'][unit]:
-                locs.append(l['name'])
+
+                if 'countries' == unit:
+                    locs.append( (l['name'], l['lat'], l['lon']) )
+                elif 'states' == unit:
+                    country = self._matchGeoName(l['countryGeoNameId'], x['focus']['countries'], geoname_type = 'country')
+                    locs.append( (l['name'], country, l['lat'], l['lon']) )
+                elif 'cities' == unit:
+                    state = self._matchGeoName(l['stateGeoNameId'], x['focus']['states'], geoname_type = 'state')
+                    country = self._matchGeoName(l['countryGeoNameId'], x['focus']['countries'], geoname_type = 'country')
+
+                    locs.append( (l['name'], state, country, l['lat'], l['lon']) )
+
         elif 'mentions' in x:
             for m in x['mentions']:
                 mens.append( (m['source']['string'], m['source']['charIndex']) )
@@ -387,7 +434,7 @@ class LocationCoder:
             locs.append(s_mens[0])
 
         if locs:
-            return ';'.join(np.sort(np.unique(locs)))
+            return set(locs)
 
         return None
 
