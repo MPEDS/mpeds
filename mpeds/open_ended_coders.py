@@ -31,7 +31,7 @@ class SizeCoder:
         self.AGW = None
         self.SWS = None
 
-    def getProtestSize(self, text, as_str = False):
+    def getSize(self, text, as_str = False):
         '''
         Extract protest size from text.
 
@@ -79,7 +79,7 @@ class SizeCoder:
             for i in range(0, i_end):
                 loc += len(tokens[i]) + 1
                 size = None
-                
+
                 if not self.RE['DIGITS'].search(tokens[i]) and not self.RE['NUMBERS'].search(tokens[i]):
                     continue
 

@@ -296,7 +296,7 @@ class MPEDS:
         if not self.size_clf:
             self.size_clf = SizeCoder()
 
-        sizes = text.apply(self.size_clf.getProtestSize, args = [True])
+        sizes = text.apply(self.size_clf.getSize, args = [True])
 
         return sizes
 
