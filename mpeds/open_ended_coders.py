@@ -31,7 +31,7 @@ class SizeCoder:
         self.AGW = None
         self.SWS = None
 
-    def getSize(self, text, as_str = False):
+    def getSize(self, text, as_str = False, verbose = False):
         '''
         Extract protest size from text.
 
@@ -40,6 +40,9 @@ class SizeCoder:
 
         :param as_str: logical indicating whether protest size should be returned as a string. Defaults to False.
         :type as_str: boolean
+
+        :param verbose: logical indicating whether to print output for debugging, defaults to False
+        :type verbose: boolean
 
         :return: sizes extracted from text
         :rtype: set, or a string if as_str = True
@@ -62,6 +65,10 @@ class SizeCoder:
         sentences = np.unique(sentences)
 
         for s in sentences:
+
+            if verbose:
+                print '\nPROCESSING SENTENCE: ' + s
+
             ## hack to stop the issue with "tens"
             s = re.sub("tens of thousands", "10,000", s, flags = re.I)
 
@@ -77,6 +84,10 @@ class SizeCoder:
             i_end = len(tokens)
             loc = 0
             for i in range(0, i_end):
+
+                if verbose:
+                    print 'At token: ' + tokens[i]
+
                 loc += len(tokens[i]) + 1
                 size = None
 
@@ -91,32 +102,71 @@ class SizeCoder:
                 r_context = i + 5 if i + 5 <= i_end else i_end
                 r_start   = i + 1 if i + 1 <= i_end else i_end
                 for j in range(r_start, r_context):
+
+                    if verbose:
+                        print '     ' + tokens[j]
+
                     if self.RE['NUMBERS'].search(tokens[j]) and j - i < 3:
                         ## skip things which will be coded in the next pass
                         ## e.g. tens of thousands or two dozen
+
+                        if verbose:
+                            print '     -> Detected number, skipping ahead'
+
                         break
+
                     elif not self.RE['NVERBS'].search(' '.join(tokens[i:])):
                         ## filter out all verbs we don't want
                         if tokens[j] in self.P_SUBJ['protest']:
                             ## if there is a protest subj, use that
+
                             size = tokens[i]
+
+                            if verbose:
+                                print '     -> Detected protest subject, setting size to ' + size
+
                         elif (self.RE['SUBJ'].search(tokens[j]) or self.RE['ETHNIC'].search(tokens[j])) \
                             and self.RE['VERBS'].search(' '.join(tokens[i:])):
                             ## if not, test for a protest verb
+
                             size = tokens[i]
+
+                            if verbose:
+                                print '     -> Detected protest verb, setting size to ' + size
+
+
 
                 ## look to the left for numbers, crowd words
                 l_context = i - 4 if i - 4 >= 0 else 0
                 for j in range(l_context, i):
+
+                    if verbose:
+                        print '     ' + tokens[j]
+
                     #if RE_GROUPS.search(tokens[j]) and RE_VERBS.search(' '.join(tokens[i:])) and not size:
                     if not size:
+
                         if self.RE['GROUPS'].search(tokens[j]) or self.RE['VERBS'].search(' '.join(tokens[i:])):
+
                             size = tokens[i]
+
+                            if verbose:
+                                print '     -> Detected protest group or verb, setting size to ' + size
+
+
+
                     elif self.RE['NUM_PRE'].search(tokens[j]):
+
                         size = '-'.join([tokens[j], size])
+
+                        if verbose:
+                            print '     -> Detected pre-number, setting size to ' + size
 
                 if size:
                     ## parse and append
+                    if verbose:
+                        print '-> Adding ' + str(self._strToNum(size)) + ' to sizes'
+
                     sizes.append(self._strToNum(size))
 
         sizes = np.sort(sizes)
@@ -293,7 +343,7 @@ class LocationCoder:
             string_locations = []
 
             for location in locations:
-                
+
                 tuple_values = [ e if isinstance(e, unicode) else str(e) for e in location  ]
                 string_locations.append( ', '.join(tuple_values) )
 
