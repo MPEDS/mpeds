@@ -162,6 +162,13 @@ class SizeCoder:
                         if verbose:
                             print '     -> Detected pre-number, setting size to ' + size
 
+                        if len(sizes) > 0 and self._strToNum(tokens[j]) == sizes[len(sizes) - 1]:
+
+                            sizes = sizes[1:(len(sizes) - 1)]
+
+                            if verbose:
+                                print '-> Pre-number added to sizes at last iteration, removing it'
+
                 if size:
                     ## parse and append
                     if verbose:
