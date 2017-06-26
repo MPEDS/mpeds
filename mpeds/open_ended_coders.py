@@ -250,7 +250,7 @@ class SizeCoder:
             'GROUPS': re.compile(r'group(s){0,1}|crowd(s){0,1}|estimate(s){0,1}|number(ing|ed){1}|march|rally|strike'),
             'VERBS': re.compile(r'strik(ing|es|ed)*|struck|demonstrat\w+|protest(?!ant)|march(ed|ing)|to march|rall(y|ied|ies)+|riot(ed|ing)*|picket(ed)*|chant(ed|ing)*|shout(ed|ing)*|(took|take) to the street(s)*|rampage(d)*|ransack(ed)|gather(ed)*|petition|occup(y|ied|ing)+|stay(ed)* home|demand(ed|ing)*|stopped work(ing)*|walk(ed)*\s*out|(holding|held) (up)* signs|held a sleepout|blockaded traffic|rebellion|jamm(ing|ed) the street(s)*|signed a letter|(press|news) conference|boycott(ed|ing)*|vandaliz\w+|burned|camp(ed)|return(ed)* to work|ended their fast|walked off the job|carr(ied|ying) signs|were expected'),
             'NVERBS': re.compile(r'were (hurt|injured|killed|wounded)|died'),
-            'ETHNIC': self._loadEthnicities(),
+            'ETHNIC': self._getEthnicitiesRegexPattern(),
             'YEARS': re.compile(r'^(' + S_YEARS + ')$')
             }
 
@@ -308,12 +308,14 @@ class SizeCoder:
             'millions': 1000000
             }
 
-    def _loadEthnicities(self):
-        # should this be named load when the other load functions update self objects rather than return stuff?
+    def _getEthnicitiesRegexPattern(self):
         '''
-        Load ethnic and nationalist nouns from Wikipedia:
+        Parse ethnic and nationalist nouns from Wikipedia into a regex pattern
         https://en.wikipedia.org/wiki/List_of_contemporary_ethnic_groups
         https://en.wikipedia.org/wiki/Lists_of_people_by_nationality
+
+        :return: regex patterns of ethnicities_2016-03
+        :rtype: regex patterns
         '''
         return re.compile('|'.join(open( 'input/ethnicities_2016-03-15.csv', 'r' ).read().split('\n')))
 
@@ -361,10 +363,22 @@ class LocationCoder:
 
     def _matchGeoName(self, geoname_id, cliff_results, geoname_type = 'state'):
         '''
-        Get name of state or country based on GeoName ID.
+        Get name of state or country based on GeoName ID by parsing through list of CLIFF results.
 
+        :param geoname_id: GeoName ID to be matched
+        :type geoname_id: string
 
+        :param cliff_results: CLIFF results to parse through
+        :type cliff_results: json
+
+        :param geoname_type: type of geoname to be matched, 'state' (default) or 'country'
+        :type geoname_type: string
+
+        :return: name of country or state, or None if no matching name found
+        :rtype: string
         '''
+
+        # INPUT TESTING
         if geoname_type not in ['state', 'country']:
             raise ValueError("geoname_type must be either state or country")
 
@@ -403,9 +417,7 @@ class LocationCoder:
 
         :return: CLIFF location results
         :rtype: dictionary
-
         '''
-        # TO DO: should as_str be implemented here?
 
         if text != text:
             return ([],{})
@@ -438,7 +450,6 @@ class LocationCoder:
 
         :param x: CLIFF location results
         :type x: dictionary
-
 
         :return: final location
         :rtype: string
