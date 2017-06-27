@@ -115,6 +115,7 @@ class MPEDS:
         sentences = text.split("<br/>")
         return sentences[0]
 
+
     def haystack(self, text):
         '''
         Perform haystack classification task.
@@ -189,11 +190,8 @@ class MPEDS:
 
         print('Predicting form probabilities...')
         probs    = self.form_clf.predict_proba(X)
-        p_tuples = []
-        for i in range(0, self.form_clf.classes_.shape[0]):
-            p_tuples.append( (self.form_clf.classes_[i], probs[i]) )
 
-        return p_tuples
+        return (probs, self.form_clf.classes_)
 
 
     def getIssue(self, text):
@@ -243,7 +241,7 @@ class MPEDS:
         '''
         if not self.target_vect:
             print('Loading target vectorizer...')
-            self.target_vect = joblib.load('classifiers/target-vect_2017-05-23.pkl')
+            self.target_vect = joblib.load('classifiers/target-vect_2017-06-27.pkl')
 
         print('Vectorizing...')
         X = self.target_vect.transform(text)
@@ -251,18 +249,32 @@ class MPEDS:
         ## load classifier
         if not self.target_clf:
             print('Loading target classifier...')
-            self.target_clf = joblib.load('classifiers/target_2017-05-23.pkl')
+            self.target_clf = joblib.load('classifiers/target_2017-06-27.pkl')
 
         print('Predicting...')
         y = self.target_clf.predict(X)
 
         return y
 
+
     def getTargetProb(self, text):
         ''' '''
+        if not self.target_vect:
+            print('Loading target vectorizer...')
+            self.target_vect = joblib.load('classifiers/target-vect_2017-06-27.pkl')
 
-        print('Sorry, target classification model does not support probability estimates')
+        print('Vectorizing...')
+        X = self.target_vect.transform(text)
 
+        ## load classifier
+        if not self.target_clf:
+            print('Loading target classifier...')
+            self.target_clf = joblib.load('classifiers/target_2017-06-27.pkl')
+
+        print('Predicting target probabilities...')
+        probs    = self.target_clf.predict_proba(X)
+
+        return (probs, self.target_clf.classes_)
 
 
     def getSMO(self, text):
