@@ -23,7 +23,15 @@ class MPEDS:
         self.smo_clf = None
 
     def getLede(self, text):
-        ''' Get the lede sentence for this text. '''
+        ''' 
+        Get the lede sentence for the text. Splits on <br/>
+
+        :param text: text(s) to extracte lede from
+        :type text: string or pandas series of strings
+
+        :return: ledes
+        :rtype: pandas series
+        '''
 
         def _first_sentence(text):
             sentences = text.split("<br/>")
@@ -102,7 +110,16 @@ class MPEDS:
 
 
     def getFormProb(self, text):
-        ''' '''
+        ''' 
+        Get probabilities associated with each form.
+
+        :param text: text(s) to get form probabilities for
+        :type text: string or pandas series of strings
+
+        :return: tuple containing probabilities and classes
+        :rtype: tuple
+
+        '''
 
         if isinstance(text, basestring):
             text = pd.Series(text)
@@ -196,7 +213,16 @@ class MPEDS:
 
 
     def getTargetProb(self, text):
-        ''' '''
+        '''
+        Get probabilities associated with each target.
+
+        :param text: text(s) to get target probabilities for
+        :type text: string or pandas series of strings
+
+        :return: tuple containing probabilities and classes
+        :rtype: tuple
+
+        '''
 
         if isinstance(text, basestring):
             text = pd.Series(text)
