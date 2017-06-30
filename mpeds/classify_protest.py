@@ -33,11 +33,14 @@ class MPEDS:
         Perform haystack classification task.
 
         :param text: documents to be classified
-        :type text: pandas series of strings
+        :type text: string or pandas series of strings
 
         :return: predictions
         :rtype: pandas series
         '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
 
         ## load vectorizer
         if not self.hay_vect:
@@ -62,11 +65,14 @@ class MPEDS:
         Classify protest form.
 
         :param text: documents to perform classification task on
-        :type text: pandas series of strings
+        :type text: string or pandas series of strings
 
         :return: predictions
         :rtype: pandas series
         '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
 
         if not self.form_vect:
             print('Loading form vectorizer...')
@@ -88,6 +94,10 @@ class MPEDS:
 
     def getFormProb(self, text):
         ''' '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
+
         if not self.form_vect:
             print('Loading form vectorizer...')
             self.form_vect = joblib.load('classifiers/form-vect_2017-05-23.pkl')
@@ -111,11 +121,14 @@ class MPEDS:
         Classify protest issue.
 
         :param text: documents to perform classification task on
-        :type text: pandas series of strings
+        :type text: string or pandas series of strings
 
         :return: predictions
         :rtype: pandas series
         '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
 
         if not self.issue_vect:
             print('Loading issue vectorizer...')
@@ -146,11 +159,15 @@ class MPEDS:
         Classify protest target.
 
         :param text: documents to perform classification task on
-        :type text: pandas series of strings
+        :type text: string or pandas series of strings
 
         :return: predictions
         :rtype: pandas series
         '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
+
         if not self.target_vect:
             print('Loading target vectorizer...')
             self.target_vect = joblib.load('classifiers/target-vect_2017-06-27.pkl')
@@ -171,6 +188,10 @@ class MPEDS:
 
     def getTargetProb(self, text):
         ''' '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
+
         if not self.target_vect:
             print('Loading target vectorizer...')
             self.target_vect = joblib.load('classifiers/target-vect_2017-06-27.pkl')
@@ -194,11 +215,14 @@ class MPEDS:
         Extract social movement organizations from text
 
         :param text: documents to perform coding task on
-        :type text: pandas series of strings
+        :type text: string or pandas series of strings
 
         :return: extracted SMOs
         :rtype: pandas series
         '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
 
         if not self.smo_clf:
             self.smo_clf = SMOCoder()
@@ -212,11 +236,15 @@ class MPEDS:
         Extract protest from text
 
         :param text: documents to perform coding task on
-        :type text: pandas series of strings
+        :type text: string or pandas series of strings
 
         :return: extracted sizes
         :rtype: pandas series
         '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
+
         if not self.size_clf:
             self.size_clf = SizeCoder()
 
@@ -229,11 +257,14 @@ class MPEDS:
         Extract locations from text
 
         :param text: documents to perform coding task on
-        :type text: pandas series of strings
+        :type text: string or pandas series of strings
 
         :return: extracted locations
         :rtype: pandas series
         '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
 
         if not self.location_clf:
             self.location_clf = LocationCoder()
