@@ -24,8 +24,17 @@ class MPEDS:
 
     def getLede(self, text):
         ''' Get the lede sentence for this text. '''
-        sentences = text.split("<br/>")
-        return sentences[0]
+
+        def _first_sentence(text):
+            sentences = text.split("<br/>")
+            return sentences[0]
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
+
+        sentences = text.apply(_first_sentence)
+
+        return sentences
 
 
     def haystack(self, text):
