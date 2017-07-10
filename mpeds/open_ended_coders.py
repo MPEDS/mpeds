@@ -91,7 +91,13 @@ class SizeCoder:
                 loc += len(tokens[i]) + 1
                 size = None
 
+
+                # skip ahead if not a number
                 if not self.RE['DIGITS'].search(tokens[i]) and not self.RE['NUMBERS'].search(tokens[i]):
+                    continue
+
+                # skip if immediately followed by percent
+                if i_end - i >= 2 and tokens[i + 1] == 'per' and tokens[i + 2] == 'cent':
                     continue
 
                 ## skip years
