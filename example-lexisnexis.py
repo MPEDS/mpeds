@@ -5,12 +5,14 @@ from mpeds.parsers.lexisnexis import parseLexisNexis
 import pandas as pd
 import numpy as np
 
+from pkg_resources import resource_filename
+
 from hashlib import md5
 
 def pubToID(pubname):
     return "-".join(pubname.split())
 
-articles = parseLexisNexis('documents/University_Wire2012-01-01_2012-01-31.TXT')
+articles = parseLexisNexis(resource_filename(__name__, 'documents/University_Wire2012-01-01_2012-01-31.TXT'))
 df = pd.DataFrame(articles)
 
 ## generate ID based on publication, date, and hash of text of document

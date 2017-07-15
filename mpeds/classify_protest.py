@@ -5,6 +5,8 @@ import numpy as np
 from sklearn.externals import joblib
 from mpeds.open_ended_coders import *
 
+from pkg_resources import resource_filename
+
 class MPEDS:
     def __init__(self):
         ''' Constructor. '''
@@ -23,7 +25,7 @@ class MPEDS:
         self.smo_clf = None
 
     def getLede(self, text):
-        ''' 
+        '''
         Get the lede sentence for the text. Splits on <br/>
 
         :param text: text(s) to extracte lede from
@@ -62,7 +64,7 @@ class MPEDS:
         ## load vectorizer
         if not self.hay_vect:
             print('Loading vectorizer...')
-            self.hay_vect = joblib.load('classifiers/haystack-vect_all-source_2017-05-24.pkl')
+            self.hay_vect = joblib.load(resource_filename(__name__, 'classifiers/haystack-vect_all-source_2017-05-24.pkl'))
 
         print('Vectorizing...')
         X = self.hay_vect.transform(text)
@@ -70,7 +72,7 @@ class MPEDS:
         ## load classifier
         if not self.hay_clf:
             print('Loading classifier...')
-            self.hay_clf = joblib.load('classifiers/haystack_all-source_2017-05-24.pkl')
+            self.hay_clf = joblib.load(resource_filename(__name__, 'classifiers/haystack_all-source_2017-05-24.pkl'))
 
         print('Predicting...')
         y = self.hay_clf.predict(X)
@@ -93,7 +95,7 @@ class MPEDS:
 
         if not self.form_vect:
             print('Loading form vectorizer...')
-            self.form_vect = joblib.load('classifiers/form-vect_2017-05-23.pkl')
+            self.form_vect = joblib.load(resource_filename(__name__, 'classifiers/form-vect_2017-05-23.pkl'))
 
         print('Vectorizing...')
         X = self.form_vect.transform(text)
@@ -101,7 +103,7 @@ class MPEDS:
         ## load classifier
         if not self.form_clf:
             print('Loading form classifier...')
-            self.form_clf = joblib.load('classifiers/form_2017-05-23.pkl')
+            self.form_clf = joblib.load(resource_filename(__name__, 'classifiers/form_2017-05-23.pkl'))
 
         print('Predicting...')
         y = self.form_clf.predict(X)
@@ -110,7 +112,7 @@ class MPEDS:
 
 
     def getFormProb(self, text):
-        ''' 
+        '''
         Get probabilities associated with each form.
 
         :param text: text(s) to get form probabilities for
@@ -126,7 +128,7 @@ class MPEDS:
 
         if not self.form_vect:
             print('Loading form vectorizer...')
-            self.form_vect = joblib.load('classifiers/form-vect_2017-05-23.pkl')
+            self.form_vect = joblib.load(resource_filename(__name__, 'classifiers/form-vect_2017-05-23.pkl'))
 
         print('Vectorizing...')
         X = self.form_vect.transform(text)
@@ -134,7 +136,7 @@ class MPEDS:
         ## load classifier
         if not self.form_clf:
             print('Loading form classifier...')
-            self.form_clf = joblib.load('classifiers/form_2017-05-23.pkl')
+            self.form_clf = joblib.load(resource_filename(__name__, 'classifiers/form_2017-05-23.pkl'))
 
         print('Predicting form probabilities...')
         probs    = self.form_clf.predict_proba(X)
@@ -158,7 +160,7 @@ class MPEDS:
 
         if not self.issue_vect:
             print('Loading issue vectorizer...')
-            self.issue_vect = joblib.load('classifiers/issue-vect_2017-05-23.pkl')
+            self.issue_vect = joblib.load(resource_filename(__name__, 'classifiers/issue-vect_2017-05-23.pkl'))
 
         print('Vectorizing...')
         X = self.issue_vect.transform(text)
@@ -166,7 +168,7 @@ class MPEDS:
         ## load classifier
         if not self.issue_clf:
             print('Loading issue classifier...')
-            self.issue_clf = joblib.load('classifiers/issue_2017-05-23.pkl')
+            self.issue_clf = joblib.load(resource_filename(__name__, 'classifiers/issue_2017-05-23.pkl'))
 
         print('Predicting...')
         y = self.issue_clf.predict(X)
@@ -196,7 +198,7 @@ class MPEDS:
 
         if not self.target_vect:
             print('Loading target vectorizer...')
-            self.target_vect = joblib.load('classifiers/target-vect_2017-06-27.pkl')
+            self.target_vect = joblib.load(resource_filename(__name__, 'classifiers/target-vect_2017-06-27.pkl'))
 
         print('Vectorizing...')
         X = self.target_vect.transform(text)
@@ -204,7 +206,7 @@ class MPEDS:
         ## load classifier
         if not self.target_clf:
             print('Loading target classifier...')
-            self.target_clf = joblib.load('classifiers/target_2017-06-27.pkl')
+            self.target_clf = joblib.load(resource_filename(__name__, 'classifiers/target_2017-06-27.pkl'))
 
         print('Predicting...')
         y = self.target_clf.predict(X)
@@ -229,7 +231,7 @@ class MPEDS:
 
         if not self.target_vect:
             print('Loading target vectorizer...')
-            self.target_vect = joblib.load('classifiers/target-vect_2017-06-27.pkl')
+            self.target_vect = joblib.load(resource_filename(__name__, 'classifiers/target-vect_2017-06-27.pkl'))
 
         print('Vectorizing...')
         X = self.target_vect.transform(text)
@@ -237,7 +239,7 @@ class MPEDS:
         ## load classifier
         if not self.target_clf:
             print('Loading target classifier...')
-            self.target_clf = joblib.load('classifiers/target_2017-06-27.pkl')
+            self.target_clf = joblib.load(resource_filename(__name__, 'classifiers/target_2017-06-27.pkl'))
 
         print('Predicting target probabilities...')
         probs    = self.target_clf.predict_proba(X)

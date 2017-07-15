@@ -9,11 +9,10 @@ import json
 
 import os
 
-
 from sklearn.feature_extraction import stop_words
 from nltk.tag import StanfordNERTagger
 from nltk.tokenize.stanford import StanfordTokenizer
-
+from pkg_resources import resource_filename
 
 import nltk.data
 
@@ -323,7 +322,7 @@ class SizeCoder:
         :return: regex patterns of ethnicities_2016-03
         :rtype: regex patterns
         '''
-        return re.compile('|'.join(open( 'input/ethnicities_2016-03-15.csv', 'r' ).read().split('\n')))
+        return re.compile('|'.join(open( resource_filename(__name__, 'input/ethnicities_2016-03-15.csv'), 'r' ).read().split('\n')))
 
 class LocationCoder:
     '''
@@ -522,9 +521,8 @@ class SMOCoder:
 
         # load tokenizer and tagger
         # TO DO: again, update to Docker path
-        self.STANFORD_TOKENIZER = StanfordTokenizer('tokenizers/stanford-ner-3.6.0.jar')
-        self.SMO_tagger = StanfordNERTagger('classifiers/ner-orgs_2016-03-28_all.ser.gz')
-
+        self.STANFORD_TOKENIZER = StanfordTokenizer(resource_filename(__name__, 'tokenizers/stanford-ner-3.6.0.jar'))
+        self.SMO_tagger = StanfordNERTagger(resource_filename(__name__, 'classifiers/ner-orgs_2016-03-28_all.ser.gz'))
 
     def getSMO(self, text, as_str = False):
         '''
