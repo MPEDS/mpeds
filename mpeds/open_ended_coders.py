@@ -517,7 +517,7 @@ class SMOCoder:
 
         # set envirinment variable
         # TO DO: update to Docker path
-        os.environ['CLASSPATH'] = '/home/a/ahanna/sandbox/stanford-ner-2015-12-09/'
+        os.environ['CLASSPATH'] = resource_filename(__name__, 'tokenizers/')
 
         # load tokenizer and tagger
         # TO DO: again, update to Docker path
