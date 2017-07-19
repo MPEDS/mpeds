@@ -1,0 +1,12 @@
+version:  '2'
+services:
+  cliff:
+    image: cliff:2.3.0
+    build: ./cliff
+    ports:
+      - "8080:8080"
+  mpeds:
+    image: mpeds:0.1
+    build: ./mpeds
+    depends_on:
+      - cliff
