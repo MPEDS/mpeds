@@ -433,7 +433,7 @@ class LocationCoder:
         while obj is None:
             # TO DO: Do we need a config file for this? Hardcoding URL for now
             # url = 'http://%s/parse/text' % config['CLIFF_URL']
-            url = 'http://%s/parse/text' % 'cliff:8080/cliff-2.3.0'
+            url = 'http://%s/parse/text' % 'cliff:8080/CLIFF-2.3.0'
             req = urllib2.Request(url, data)
             res = urllib2.urlopen(req)
             obj = json.loads(res.read())

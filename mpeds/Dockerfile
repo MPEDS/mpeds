@@ -26,4 +26,4 @@ ENV JAVA_HOME=/usr/java/jdk1.8.0_131/ \
     LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 
-CMD [ "python", "waiting.py" ]
+CMD python waiting.py && bash
