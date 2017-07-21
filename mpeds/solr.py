@@ -5,8 +5,8 @@ import urllib2
 
 class Solr:
 
-	def __init__(self):        
-		self.search_str = 'boycott* "press conference" "news conference" (protest* AND NOT protestant*) strik* rally ralli* riot* sit-in occupation mobiliz* blockage demonstrat* marchi* marche*'
+    def __init__(self):        
+        self.search_str = 'boycott* "press conference" "news conference" (protest* AND NOT protestant*) strik* rally ralli* riot* sit-in occupation mobiliz* blockage demonstrat* marchi* marche*'
         self.solr_url   = None
 
     def setSolrURL(self, url):
