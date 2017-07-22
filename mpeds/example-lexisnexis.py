@@ -38,4 +38,4 @@ df_protest['size'] = mobj.getSize(df_protest['TEXT'])
 df_protest['smo'] = mobj.getSMO(df_protest['TEXT'])
 
 # commented out until CLIFF integration is up and running
-# df_protest['location'] = mobj.getLocation(df_protest['TEXT'])
+df_protest['location'] = mobj.getLocation(df_protest['TEXT'])
