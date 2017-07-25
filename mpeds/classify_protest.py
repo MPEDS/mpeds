@@ -17,6 +17,7 @@ class MPEDS:
         self.form_vect   = None
         self.issue_clf   = None
         self.issue_vect  = None
+        self.issue_reg = None
         self.target_clf  = None
         self.target_vect = None
 
@@ -175,11 +176,64 @@ class MPEDS:
 
         return y
 
-    def getIssueProb(self, text):
-        ''' '''
+    def getIssueProb(self, text, scale = True):
+        '''
+        Get probabilities associated with each issue. Calculated from Platt's method.
 
-        # SGDclassifiers with loss='hinge' are linear SVMs, and thus do not support probability estimates
-        print('Sorry, issue classification model does not support probability estimates')
+        :param text: text(s) to get form probabilities for
+        :type text: string or pandas series of strings
+
+        :param scale: logical whether probabilities should be scaled to sum to 1. Defaults to true
+        :type scale: boolean
+
+        :return: tuple containing probabilities and classes
+        :rtype: tuple
+
+        '''
+
+        if isinstance(text, basestring):
+            text = pd.Series(text)
+
+        # load vectorizer
+        if not self.issue_vect:
+            print('Loading issue vectorizer...')
+            self.issue_vect = joblib.load(resource_filename(__name__, 'classifiers/issue-vect_2017-05-23.pkl'))
+
+        # load classifier
+        if not self.issue_clf:
+            print('Loading issue classifier...')
+            self.issue_clf = joblib.load(resource_filename(__name__, 'classifiers/issue_2017-05-23.pkl'))
+
+        # load regression models
+        if not self.issue_reg:
+            print('Loading regression models for estimating issue probabilities')
+            self.issue_reg = joblib.load(resource_filename(__name__, 'classifiers/issue_regression_models_2017-07-24.pkl'))
+
+
+        print('Vectorizing...')
+        X = self.issue_vect.transform(text)
+
+        # get SVM margins, and use as input to individual regression models
+        svm_margins = pd.DataFrame( self.issue_clf.decision_function(X) )
+        svm_margins.columns = self.issue_clf.classes_
+
+        probs = {}
+
+        for category, regression_model in self.issue_reg.iteritems():
+            category_probs = regression_model.predict_proba( svm_margins[category].reshape(-1, 1) )
+
+            # function above gets probabilities for both class 0 and class 1 (never mind that they sum to 1...)
+            # extract class 1 probabilities
+            probs[category] = category_probs[:, 1]
+
+        probs = pd.DataFrame(probs)
+
+        # scale to sum to 1
+        if scale:
+            probs = probs.div(probs.sum(axis = 1), axis = 0)
+
+        # set data return format to match other probability functions
+        return (probs.values, np.array(probs.columns).astype('S32'))
 
 
     def getTarget(self, text):
