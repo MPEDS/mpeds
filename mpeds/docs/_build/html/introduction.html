@@ -39,7 +39,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <span class="target" id="module-mpeds.classify_protest"></span><p>MPEDS is an automated tool for extracting protest event data from news articles.</p>
+  <span class="target" id="module-mpeds.classify_protest"></span><p>MPEDS is an automated tool for extracting protest event data from news articles. It consists of three tasks: identification of news articles that describe a protest event (haystack classification); classification of protest form, target, and issue (closed-ended coding task); and extraction of size, social movement organizations, and location (open-ended coding task).</p>
 <div class="section" id="haystack-classification">
 <h1>Haystack classification<a class="headerlink" href="#haystack-classification" title="Permalink to this headline">¶</a></h1>
 <p>The first task is to identify whether a news article contains information about a protest event. This is a binary classification task, and it is performed by an ensemble of classification models.</p>
@@ -70,9 +70,11 @@
 </div>
 <div class="section" id="closed-ended-classifiers">
 <h1>Closed-ended classifiers<a class="headerlink" href="#closed-ended-classifiers" title="Permalink to this headline">¶</a></h1>
-<p>In addition to classifying whether a news article describes a protest or not, MPEDS extracts information about the nature of the protest.</p>
+<p>In addition to classifying whether a news article describes a protest or not, MPEDS extracts information about the nature of the protest. These additional variables take two main forms: closed-ended variables that can take on one of a discrete number of values, while open-ended variables can take any number of values.</p>
+<p>There are three closed-ended classification tasks: the form, issue, and target of the protest. For each of these, MPEDS both predicts a class and returns probability estimates associated with all of the classes.</p>
 <div class="section" id="form">
 <h2>Form<a class="headerlink" href="#form" title="Permalink to this headline">¶</a></h2>
+<p>There are 11 possible values for the form of the protest: <em>Blockade/slowdown/disruption, Boycott, Hunger Strike, March, Occupation/sit-in, Rally/demonstration, Rally/demonstration-March, Riot, Strike/walkout/lockout, Symbolic display/symbolic action</em>, and <em>None</em>. A logistic regression classifier is used to predict the form.</p>
 <dl class="class">
 <dt>
 <em class="property">class </em><code class="descclassname">mpeds.classify_protest.</code><code class="descname">MPEDS</code></dt>
@@ -115,6 +117,177 @@
 </dd></dl>
 
 </div>
+<div class="section" id="issue">
+<h2>Issue<a class="headerlink" href="#issue" title="Permalink to this headline">¶</a></h2>
+<p>The issue variable can take 17 different values: <em>Abortion, Anti-colonial/political independence, Anti-war/peace, Civic violence, Criminal justice system, Democratization, Economy/inequality, Environmental, Foreign policy, Human and civil rights, Immigration, Labor &amp; work, Political corruption/malfeasance, Racial/ethnic rights, Religion, Social services &amp; welfare</em>, and <em>None</em>.</p>
+<p>Classification is made with a linear with a support vector machine (SVM) with a linear kernel. As SVMs do not support class probability estimates, class probabilities are calculated using Platt’s method <a class="footnote-reference" href="#id2" id="id1">[1]</a>. For each category, the SVM classifier margins are used to fit a logistic regression model to the training data. These regression models are then used to estimate the probability of a sample belonging to each of the classes.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">mpeds.classify_protest.</code><code class="descname">MPEDS</code></dt>
+<dd><dl class="method">
+<dt id="mpeds.classify_protest.MPEDS.getIssue">
+<code class="descname">getIssue</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#mpeds.classify_protest.MPEDS.getIssue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Classify protest issue.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>string</em><em> or </em><em>pandas series of strings</em>) – documents to perform classification task on</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">predictions</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas series</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mpeds.classify_protest.MPEDS.getIssueProb">
+<code class="descname">getIssueProb</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#mpeds.classify_protest.MPEDS.getIssueProb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Platt, John. “Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods.” <em>Advances in large margin classifiers</em> 10.3 (1999): 61-74.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="target">
+<h2>Target<a class="headerlink" href="#target" title="Permalink to this headline">¶</a></h2>
+<p>MPEDS considers seven categories for the target of the protest: <em>Domestic government,
+Foreign government, Individual, Intergovernmental organization, Private/business, University/school</em>, and <em>None</em>.</p>
+<p>The target prediction is made with an ensemble classifier consisting of a logistic regression model and a stochastic gradient descent classifier with smoothed hinge loss. The final classification is decided by a soft voting approach.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">mpeds.classify_protest.</code><code class="descname">MPEDS</code></dt>
+<dd><dl class="method">
+<dt id="mpeds.classify_protest.MPEDS.getTarget">
+<code class="descname">getTarget</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#mpeds.classify_protest.MPEDS.getTarget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Classify protest target.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>string</em><em> or </em><em>pandas series of strings</em>) – documents to perform classification task on</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">predictions</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas series</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mpeds.classify_protest.MPEDS.getTargetProb">
+<code class="descname">getTargetProb</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#mpeds.classify_protest.MPEDS.getTargetProb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get probabilities associated with each target.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>string</em><em> or </em><em>pandas series of strings</em>) – text(s) to get target probabilities for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple containing probabilities and classes</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="open-ended-classifiers">
+<h1>Open-ended classifiers<a class="headerlink" href="#open-ended-classifiers" title="Permalink to this headline">¶</a></h1>
+<p>MPEDS extracts information on the protest’s size, location, and social movement organizations from the news article.</p>
+<div class="section" id="size">
+<h2>Size<a class="headerlink" href="#size" title="Permalink to this headline">¶</a></h2>
+<p>A pattern matching approach is used to extract the size of any protests mentioned in an article.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">mpeds.classify_protest.</code><code class="descname">MPEDS</code></dt>
+<dd><dl class="method">
+<dt id="mpeds.classify_protest.MPEDS.getSize">
+<code class="descname">getSize</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#mpeds.classify_protest.MPEDS.getSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract protest from text</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>string</em><em> or </em><em>pandas series of strings</em>) – documents to perform coding task on</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">extracted sizes</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas series</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="social-movement-organization">
+<h2>Social movement organization<a class="headerlink" href="#social-movement-organization" title="Permalink to this headline">¶</a></h2>
+<p>To extract the social movemenent organizations behind a protest, MPEDS uses a custom-trained <a class="reference external" href="https://nlp.stanford.edu/software/CRF-NER.shtml">Stanford NER classifier</a>.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">mpeds.classify_protest.</code><code class="descname">MPEDS</code></dt>
+<dd><dl class="method">
+<dt id="mpeds.classify_protest.MPEDS.getSMO">
+<code class="descname">getSMO</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#mpeds.classify_protest.MPEDS.getSMO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract social movement organizations from text</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>string</em><em> or </em><em>pandas series of strings</em>) – documents to perform coding task on</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">extracted SMOs</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas series</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="location">
+<h2>Location<a class="headerlink" href="#location" title="Permalink to this headline">¶</a></h2>
+<p>MPEDS uses <a class="reference external" href="http://cliff.mediameter.org">CLIFF</a> to extract information on the location of the protest. Locations are returned as the most specific geographic entity available (e.g. if a city and a country are mentioned, only the city will be returned).</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">mpeds.classify_protest.</code><code class="descname">MPEDS</code></dt>
+<dd><dl class="method">
+<dt id="mpeds.classify_protest.MPEDS.getLocation">
+<code class="descname">getLocation</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#mpeds.classify_protest.MPEDS.getLocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract locations from text</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>string</em><em> or </em><em>pandas series of strings</em>) – documents to perform coding task on</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">extracted locations</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas series</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -137,6 +310,14 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Haystack classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#closed-ended-classifiers">Closed-ended classifiers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#form">Form</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#issue">Issue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#target">Target</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#open-ended-classifiers">Open-ended classifiers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#size">Size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#social-movement-organization">Social movement organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#location">Location</a></li>
 </ul>
 </li>
 </ul>
