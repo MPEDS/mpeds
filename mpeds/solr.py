@@ -3,14 +3,18 @@ import json
 import urllib
 import urllib2
 
-class Solr:
+""" 
+Helper class for querying an Apache Solr database. 
+"""
 
-    def __init__(self):        
-        self.search_str = 'boycott* "press conference" "news conference" (protest* AND NOT protestant*) strik* rally ralli* riot* sit-in occupation mobiliz* blockage demonstrat* marchi* marche*'
+class Solr:
+    def __init__(self):
         self.solr_url   = None
+
 
     def setSolrURL(self, url):
         self.solr_url = url
+
 
     def buildSolrQuery(self, q_dict):
         ''' Build a query for a Solr request. '''
@@ -23,9 +27,8 @@ class Solr:
         return query
 
 
-    def makeSolrRequest(self, q, fq = None, protest = False):
-        """ makes Solr requests to get article texts """
-
+    def getResultsFound(self, q, fq = None):
+        """ report the number of results found for any given request. """
         data = {
             'q':     q,
             'start': 0,
@@ -33,9 +36,29 @@ class Solr:
             'wt':    'json'
         }
 
-        ## put protest string into fq field
-        if protest:
-            data['fq'] = self.search_str
+        if fq:
+            data['fq'] = fq
+
+        data = urllib.urlencode(data)
+        req  = urllib2.Request(self.solr_url, data)
+        res  = urllib2.urlopen(req)
+        res  = json.loads(res.read())
+
+        return res['response']['numFound']
+
+
+    def getDocuments(self, q, fq = None):
+        """ makes Solr requests to get article texts """
+
+        data = {
+            'q':     q,
+            'start': 0,
+            'rows':  10,
+            'wt':    'json',
+        }
+
+        if fq:
+            data['fq'] = fq
 
         data = urllib.urlencode(data)
         req  = urllib2.Request(self.solr_url, data)
@@ -59,7 +82,7 @@ class Solr:
             'wt': 'json'
         }
 
-        if fq and not protest:
+        if fq:
             data['fq'] = fq
 
         articles = []
@@ -70,6 +93,9 @@ class Solr:
                 'start': prev,
                 'wt': 'json'
             }
+
+            if fq:
+                data['fq'] = fq
 
             data = urllib.urlencode(data)
             req  = urllib2.Request(self.solr_url, data)
