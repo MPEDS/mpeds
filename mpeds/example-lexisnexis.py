@@ -25,11 +25,9 @@ df = df.drop_duplicates('id')
 mobj = MPEDS()
 df['y'] = mobj.haystack(df['TEXT'])
 
-## create dataframe which match protest
+## select only those events which contain protest events
 df_protest = df[df['y'] == 1]
 
-## Error, not able to retrieve self.form_clf.classes_
-## TK: Need to associate classes with this correctly
 df_protest['form'] = mobj.getForm(df_protest['TEXT'])
 df_protest['issue'] = mobj.getIssue(df_protest['TEXT'])
 df_protest['target'] = mobj.getTarget(df_protest['TEXT'])
@@ -37,5 +35,9 @@ df_protest['target'] = mobj.getTarget(df_protest['TEXT'])
 df_protest['size'] = mobj.getSize(df_protest['TEXT'])
 df_protest['smo'] = mobj.getSMO(df_protest['TEXT'])
 
-# commented out until CLIFF integration is up and running
 df_protest['location'] = mobj.getLocation(df_protest['TEXT'])
+
+## output to file
+df_protest[['id', 'TITLE', 'DATE', 'PUBLICATION', 'form', 'issue', 'target', 'size', 'smo', 'location']].\
+    to_csv('mpeds-output.csv', encoding = 'utf-8')
+print("Output saved to mpeds-output.csv.")
