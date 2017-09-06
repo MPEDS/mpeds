@@ -7,6 +7,12 @@ MPEDS is a tool for facilitating the creation of protest event data. MPEDS uses 
 - MPEDS: Automating the Generation of Protest Event Data. 2017. [SocArXiv](https://osf.io/preprints/socarxiv/xuqmv)
 - Black Protest in US News Wire Stories 1994-2010: Voices From the Doldrums. (with Pamela Oliver and Chaeyoon Lim) [SocArVix](https://osf.io/preprints/socarxiv/nw78x)
 
+## DOI
+
+The DOI for this repository has been created with Zenodo.
+
+[![DOI](https://zenodo.org/badge/90372885.svg)](https://zenodo.org/badge/latestdoi/90372885)
+
 ## Acknowledgments
 
 Development of this software has been supported by a National Science Foundation Graduate Research Fellowship and National Science Foundation grant [SES-1423784](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1423784). Thanks to Emanuel Ubert and Katie Fallon for working with this system since its inception, and to many undergraduate annotators who have put a lot of time working with and refining this system.
