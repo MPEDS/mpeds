@@ -330,8 +330,10 @@ class LocationCoder:
 
     '''
 
-    def __init__(self):
+    def __init__(self, cliff_url = 'cliff:8080/CLIFF-2.3.0'):
+        self.cliff_url = cliff_url        
         pass
+
 
     def getLocation(self, text, as_str = False):
         '''
@@ -413,6 +415,7 @@ class LocationCoder:
             (urllib.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.quote_plus(v.encode('utf8'), safe='/')
                 for k, v in params) )
 
+
     def _getCLIFF(self, text):
         '''
         Retrieve organizations and location via CLIFF.
@@ -428,12 +431,10 @@ class LocationCoder:
             return ([],{})
 
         obj = None
-        data = self._urlencode_utf8({ 'q': text.decode('utf-8') })
+        data = self._urlencode_utf8({ 'q': text })
 
         while obj is None:
-            # TO DO: Do we need a config file for this? Hardcoding URL for now
-            # url = 'http://%s/parse/text' % config['CLIFF_URL']
-            url = 'http://%s/parse/text' % 'cliff:8080/CLIFF-2.3.0'
+            url = 'http://%s/parse/text' % self.cliff_url
             req = urllib2.Request(url, data)
             res = urllib2.urlopen(req)
             obj = json.loads(res.read())
