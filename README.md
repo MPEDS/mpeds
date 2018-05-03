@@ -2,6 +2,10 @@
 
 MPEDS is a tool for facilitating the creation of protest event data. MPEDS uses recent innovations from machine learning and natural language processing to generate protest event data with little to no human intervention. The system aims to have the effect of increasing the speed and reducing the labor costs associated with identifying and coding collective action events in news sources, thus increasing the timeliness of protest data and reducing biases due to excessive reliance on too few news sources.
 
+## Pre-requisites
+
+You will need to install [Git LFS](https://github.com/git-lfs/git-lfs/wiki/Installation) to properly download the large classifier and vectorizer files from this repository. 
+
 ## Publications
 
 - MPEDS: Automating the Generation of Protest Event Data. 2017. [SocArXiv](https://osf.io/preprints/socarxiv/xuqmv)
