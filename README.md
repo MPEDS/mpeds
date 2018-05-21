@@ -6,6 +6,25 @@ MPEDS is a tool for facilitating the creation of protest event data. MPEDS uses 
 
 You will need to install [Git LFS](https://github.com/git-lfs/git-lfs/wiki/Installation) to properly download the large classifier and vectorizer files from this repository. 
 
+## Usage
+
+git clone https://github.com/mpeds/mpeds.git
+cd mpeds
+docker-compose run mpeds
+
+Once the container is ready:
+
+python
+import os, sys
+os.chdir('/usr/lib64/python2.7/site-packages')
+file = open('sitecustomize.py', 'w') 
+file.write('import sys\n')
+file.write('reload(sys)\n')
+file.write("sys.setdefaultencoding('utf8')")
+file.close()
+exit()
+python example-lexisnexis.py
+
 ## Publications
 
 - MPEDS: Automating the Generation of Protest Event Data. 2017. [SocArXiv](https://osf.io/preprints/socarxiv/xuqmv)
