@@ -8,22 +8,20 @@ You will need to install [Git LFS](https://github.com/git-lfs/git-lfs/wiki/Insta
 
 ## Usage
 
-git clone https://github.com/mpeds/mpeds.git
-cd mpeds
-docker-compose run mpeds
+- docker-compose run mpeds
 
 Once the container is ready:
 
-python
-import os, sys
-os.chdir('/usr/lib64/python2.7/site-packages')
-file = open('sitecustomize.py', 'w') 
-file.write('import sys\n')
-file.write('reload(sys)\n')
-file.write("sys.setdefaultencoding('utf8')")
-file.close()
-exit()
-python example-lexisnexis.py
+- python
+- import os, sys
+- os.chdir('/usr/lib64/python2.7/site-packages')
+- file = open('sitecustomize.py', 'w') 
+- file.write('import sys\n')
+- file.write('reload(sys)\n')
+- file.write("sys.setdefaultencoding('utf8')")
+- file.close()
+- exit()
+- python example-lexisnexis.py
 
 ## Publications
 
