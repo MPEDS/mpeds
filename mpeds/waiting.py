@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 # ABOUT:
 #   This script is used to check if CLIFF is ready
 #
