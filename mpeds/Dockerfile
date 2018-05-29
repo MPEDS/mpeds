@@ -15,6 +15,7 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 RUN python nltk_setup.py
+RUN python encoding.py
 
 # install Java 8
 RUN curl --insecure --junk-session-cookies --location --remote-name --silent --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm && \
