@@ -7,4 +7,4 @@ os.chdir('/usr/lib64/python2.7/site-packages')
 file = open('sitecustomize.py', 'w') 
 file.write('import sys\n')
 file.write("sys.setdefaultencoding('utf8')")
-file.close(
+file.close()
