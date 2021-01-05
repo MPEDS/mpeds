@@ -1,18 +1,26 @@
 FROM centos:centos7
 
-MAINTAINER Alex Hanna <alex.hanna@utoronto.ca>
+LABEL maintainer="Alex Hanna <alex.hanna@utoronto.ca>"
 
-RUN yum -y update; yum clean all
+RUN yum -y update \
+    && yum install -y gcc wget make \
+    && yum install -y zlib-devel bzip2-devel sqlite sqlite-devel openssl-devel \
+    && cd /usr/src \
+    && wget https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz \
+    && tar xzf Python-2.7.10.tgz \
+    && rm Python-2.7.10.tgz \
+    && cd Python-2.7.10 \
+    && ./configure --with-ensurepip=upgrade \
+    && make install \
+    && python -m pip install --upgrade pip \
+    && python -m pip install setuptools -U \
+    && yum install -y epel-release \
+    && yum clean all
 
-# Python requirements
-RUN yum -y install epel-release; yum clean all
-RUN yum -y install python-pip; yum clean all
-
-ADD . /src
+COPY . /src
 WORKDIR /src
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN python -m pip install -r requirements.txt
 
 RUN python nltk_setup.py
 RUN python encoding.py
