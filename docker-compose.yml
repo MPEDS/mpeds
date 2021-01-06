@@ -1,8 +1,8 @@
 version:  '2'
 services:
   cliff:
-    image: cliff:2.3.0
-    build: ./cliff
+    image: rahulbot/cliff-clavin:2.6.1
+    # build: ./cliff
     ports:
       - "8080:8080"
   mpeds:
