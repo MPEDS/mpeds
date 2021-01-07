@@ -4,7 +4,7 @@ LABEL maintainer="Alex Hanna <alex.hanna@utoronto.ca>"
 
 RUN yum -y update \
     && yum install -y gcc wget make \
-    && yum install -y zlib-devel bzip2-devel sqlite sqlite-devel openssl-devel \
+    && yum install -y zlib-devel bzip2-devel sqlite sqlite-devel openssl-devel gcc-c++ \
     && cd /usr/src \
     && wget https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz \
     && tar xzf Python-2.7.10.tgz \
