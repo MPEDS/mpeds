@@ -15,7 +15,8 @@ RUN yum -y update \
     && python -m pip install --upgrade pip \
     && python -m pip install setuptools -U \
     && yum install -y epel-release \
-    && yum clean all
+    && yum clean all \
+    && yum reinstall python-setuptools
 
 COPY . /src
 WORKDIR /src
