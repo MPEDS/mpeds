@@ -8,14 +8,19 @@ You will need to install [Git LFS](https://github.com/git-lfs/git-lfs/wiki/Insta
 
 ## Publications
 
-- MPEDS: Automating the Generation of Protest Event Data. 2017. [SocArXiv](https://osf.io/preprints/socarxiv/xuqmv)
-- Black Protest in US News Wire Stories 1994-2010: Voices From the Doldrums. (with Pamela Oliver and Chaeyoon Lim) [SocArVix](https://osf.io/preprints/socarxiv/nw78x)
+1. Hanna, Alex. 2017. MPEDS: Automating the Generation of Protest Event Data. SocArXiv. DOI: [10.31235/osf.io/xuqmv](https://osf.io/preprints/socarxiv/xuqmv).
+2. Oliver, Pamela, Chaeyoon Lim, Morgan Matthews and Alex Hanna. 2022. "Black Protests in the United States, 1994-2010." Sociological Science 9(May):275-312. DOI: [10.15195/v9.a12](https://sociologicalscience.com/articles-v9-12-275/).
+3. Oliver, Pamela, Alex Hanna, Chaeyoon Lim. 2022. “Constructing Relational and Verifiable Protest Event Data: Four Challenges and Some Solutions” Forthcoming in Mobilization. Preprint available https://osf.io/preprints/socarxiv/d89g7/
 
 ## DOI
 
 The DOI for this repository has been created with Zenodo.
 
 [![DOI](https://zenodo.org/badge/90372885.svg)](https://zenodo.org/badge/latestdoi/90372885)
+
+You can cite this software as:
+
+Hanna, Alex. 2017. MPEDS: Machine-Learning Protest Event Data System (v1.0). Zenodo. https://doi.org/10.5281/zenodo.886459
 
 ## Acknowledgments
 
