@@ -25,6 +25,19 @@ class MPEDS:
         self.location_clf = None
         self.smo_clf = None
 
+
+    def loadHaystack(self):
+        ''' Load haystack classifiers. '''
+        ## load vectorizer
+        if not self.hay_vect:
+            print('Loading vectorizer...')
+            self.hay_vect = joblib.load(resource_filename(__name__, 'classifiers/haystack-vect_all-source_2017-05-24.pkl'))
+
+        if not self.hay_clf:
+            print('Loading classifer...')
+            self.hay_clf = joblib.load(resource_filename(__name__, 'classifiers/haystack_all-source_2017-05-24.pkl'))
+
+
     def getLede(self, text):
         '''
         Get the lede sentence for the text. Splits on <br/>
@@ -59,24 +72,32 @@ class MPEDS:
         :rtype: pandas series
         '''
 
+        if not self.hay_vect and not self.hay_clf:
+            self.loadHaystack()
+
         if isinstance(text, basestring):
             text = pd.Series(text)
-
-        ## load vectorizer
-        if not self.hay_vect:
-            print('Loading vectorizer...')
-            self.hay_vect = joblib.load(resource_filename(__name__, 'classifiers/haystack-vect_all-source_2017-05-24.pkl'))
 
         print('Vectorizing...')
         X = self.hay_vect.transform(text)
 
-        ## load classifier
-        if not self.hay_clf:
-            print('Loading classifier...')
-            self.hay_clf = joblib.load(resource_filename(__name__, 'classifiers/haystack_all-source_2017-05-24.pkl'))
-
         print('Predicting...')
         y = self.hay_clf.predict(X)
+        return y
+
+
+    def haystackProbs(self, text):
+        """ Returns haystack probabilites for the Logistic Regression classifier,
+            rather than predictions. """
+        if not self.hay_vect and not self.hay_clf:
+            self.loadHaystack()
+
+        print('Vectoring...')
+        X = self.hay_vect.transform(text)
+
+        print('Predicting...')
+        y = [x[1] for x in self.hay_clf.estimators_[1].predict_proba(X)]
+
         return y
 
 
