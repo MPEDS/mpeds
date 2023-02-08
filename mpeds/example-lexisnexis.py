@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from mpeds.classify_protest import MPEDS
 from mpeds.parsers.lexisnexis import parseLexisNexis
 

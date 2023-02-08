@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 # ABOUT:
 #   This script is used to check if CLIFF is ready
 #
@@ -42,7 +42,7 @@ def wait_for_cliff(host_port, timeout = 15):
 
     test_string = 'Sailing to Philadelphia'
 
-    url = 'http://%s/CLIFF-2.3.0/parse/text' % host_port
+    url = 'http://%s/cliff-2.6.1/parse/text' % host_port
     data = urlencode_utf8({ 'q': test_string.decode('utf-8') })
 
 

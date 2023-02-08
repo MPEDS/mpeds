@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 from mpeds.open_ended_coders import *
 from mpeds.classify_protest import MPEDS
