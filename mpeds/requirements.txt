@@ -1,5 +1,5 @@
 pandas
 numpy
-nltk==3.6.6
+nltk==3.9
 scikit-learn
 scipy
