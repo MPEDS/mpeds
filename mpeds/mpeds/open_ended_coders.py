@@ -4,12 +4,13 @@ import nltk
 import re
 
 import urllib
-import urllib2
+import urllib.parse
+import urllib.request
 import json
 
 import os
 
-from sklearn.feature_extraction import stop_words
+from sklearn.feature_extraction import _stop_words
 from nltk.tag import StanfordNERTagger
 from nltk.tokenize.stanford import StanfordTokenizer
 from pkg_resources import resource_filename
@@ -48,7 +49,7 @@ class SizeCoder:
 
         '''
 
-        text = text.decode('utf-8')
+        # text = text.decode('utf-8')
 
         if not self.RE:
             self._loadRegexPatterns()
@@ -66,7 +67,7 @@ class SizeCoder:
         for s in sentences:
 
             if verbose:
-                print '\nPROCESSING SENTENCE: ' + s
+                print('\nPROCESSING SENTENCE: ' + s)
 
             ## hack to stop the issue with "tens"
             s = re.sub("tens of thousands", "10,000", s, flags = re.I)
@@ -85,7 +86,7 @@ class SizeCoder:
             for i in range(0, i_end):
 
                 if verbose:
-                    print 'At token: ' + tokens[i]
+                    print('At token: ' + tokens[i])
 
                 loc += len(tokens[i]) + 1
                 size = None
@@ -109,35 +110,29 @@ class SizeCoder:
                 for j in range(r_start, r_context):
 
                     if verbose:
-                        print '     ' + tokens[j]
+                        print('     ' + tokens[j])
 
                     if self.RE['NUMBERS'].search(tokens[j]) and j - i < 3:
                         ## skip things which will be coded in the next pass
                         ## e.g. tens of thousands or two dozen
 
                         if verbose:
-                            print '     -> Detected number, skipping ahead'
+                            print('     -> Detected number, skipping ahead')
 
                         break
 
                     elif not self.RE['NVERBS'].search(' '.join(tokens[i:])):
                         ## filter out all verbs we don't want
-                        if tokens[j] in self.P_SUBJ['protest']:
-                            ## if there is a protest subj, use that
+                        size = tokens[i]
 
-                            size = tokens[i]
-
-                            if verbose:
-                                print '     -> Detected protest subject, setting size to ' + size
-
-                        elif (self.RE['SUBJ'].search(tokens[j]) or self.RE['ETHNIC'].search(tokens[j])) \
+                        if (self.RE['SUBJ'].search(tokens[j]) or self.RE['ETHNIC'].search(tokens[j])) \
                             and self.RE['VERBS'].search(' '.join(tokens[i:])):
                             ## if not, test for a protest verb
 
                             size = tokens[i]
 
                             if verbose:
-                                print '     -> Detected protest verb, setting size to ' + size
+                                print('     -> Detected protest verb, setting size to ' + size)
 
 
 
@@ -146,7 +141,7 @@ class SizeCoder:
                 for j in range(l_context, i):
 
                     if verbose:
-                        print '     ' + tokens[j]
+                        print('     ' + tokens[j])
 
                     #if RE_GROUPS.search(tokens[j]) and RE_VERBS.search(' '.join(tokens[i:])) and not size:
                     if not size:
@@ -156,7 +151,7 @@ class SizeCoder:
                             size = tokens[i]
 
                             if verbose:
-                                print '     -> Detected protest group or verb, setting size to ' + size
+                                print('     -> Detected protest group or verb, setting size to ' + size)
 
 
 
@@ -165,19 +160,19 @@ class SizeCoder:
                         size = '-'.join([tokens[j], size])
 
                         if verbose:
-                            print '     -> Detected pre-number, setting size to ' + size
+                            print('     -> Detected pre-number, setting size to ' + size)
 
                         if len(sizes) > 0 and self._strToNum(tokens[j]) == sizes[len(sizes) - 1]:
 
                             sizes = sizes[1:(len(sizes) - 1)]
 
                             if verbose:
-                                print '-> Pre-number added to sizes at last iteration, removing it'
+                                print('-> Pre-number added to sizes at last iteration, removing it')
 
                 if size:
                     ## parse and append
                     if verbose:
-                        print '-> Adding ' + str(self._strToNum(size)) + ' to sizes'
+                        print('-> Adding ' + str(self._strToNum(size)) + ' to sizes')
 
                     sizes.append(self._strToNum(size))
 
@@ -233,7 +228,7 @@ class SizeCoder:
             self._loadNumberMapping()
 
         # remove tens, which is almost never used by itself
-        number_set = self.NUM_MAP.keys()
+        number_set = list(self.NUM_MAP.keys())
         number_set.remove('tens')
 
         S_LESS10  = r'one|two|three|four|five|six|seven|eight|nine'
@@ -264,14 +259,14 @@ class SizeCoder:
         self.S_PREFIX  = ['around', 'up to', 'as many as', 'some', 'many', 'nearly', 'more than', 'about']
 
         self.P_SUBJ   = {
-            'protest': ['protesters', 'protestors', 'demonstrators', 'activists', 'strikers', 'marchers', 'signatures',
+            'protest': ['protesters', 'protestors', 'students', 'people','demonstrators', 'activists', 'strikers', 'marchers', 'signatures',
             	'counter-demonstrators', 'counter-demonstraters', 'counter-protesters', 'counter-protestors', 'counterprotesters',
             	'counterprotestors']
                 }
 
         self.AGW = ['Agence France-Presse, English Service', 'Associated Press Worldstream, English Service']
 
-        self.SWS = list(stop_words.ENGLISH_STOP_WORDS)
+        self.SWS = list(_stop_words.ENGLISH_STOP_WORDS)
 
 
     def _loadNumberMapping(self):
@@ -412,7 +407,7 @@ class LocationCoder:
         if hasattr(params, 'items'):
             params = params.items()
         return '&'.join(
-            (urllib.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.quote_plus(v.encode('utf8'), safe='/')
+            (urllib.parse.quote_plus(k.encode('utf8'), safe='/') + '=' + urllib.parse.quote_plus(v.encode('utf8'), safe='/')
                 for k, v in params) )
 
 
@@ -435,8 +430,8 @@ class LocationCoder:
 
         while obj is None:
             url = 'http://%s/parse/text' % self.cliff_url
-            req = urllib2.Request(url, data)
-            res = urllib2.urlopen(req)
+            req = urllib.request.Request(url, data.encode('utf-8'))
+            res = urllib.request.urlopen(req)
             obj = json.loads(res.read())
 
             if obj is not None:
